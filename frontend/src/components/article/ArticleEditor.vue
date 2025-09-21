@@ -4,11 +4,11 @@ import { Editor, EditorContent } from '@tiptap/vue-3'
 import StarterKit from '@tiptap/starter-kit'
 
 import Input from '../ui/Input.vue'
+import Alert from '../ui/Alert.vue'
 
 const editor = ref(null)
-
-
 const title = ref('')
+const showAlert = ref(false)
 
 onMounted(() => {
   editor.value = new Editor({
@@ -33,6 +33,11 @@ const addEntry = async () => {
     await window.go.main.App.CreateEntry(titleValue, contentHTML, now)
     title.value = ""
     editor.value.commands.clearContent()
+
+    showAlert.value = true
+    setTimeout(() => {
+      showAlert.value = false
+    }, 3000)
   } catch (e) {
     console.log(e.message)
   }
@@ -54,6 +59,9 @@ const addEntry = async () => {
         </button>
       </div>
     </article>
+    <Transition name="alert">
+      <Alert v-if="showAlert">Запись добавлена</Alert>
+    </Transition>
   </main>
 </template>
 
@@ -97,5 +105,16 @@ const addEntry = async () => {
 
 .editor-container {
   position: relative;
+}
+
+.alert-enter-active,
+.alert-leave-active {
+  transition: all 0.3s ease;
+}
+
+.alert-enter-from,
+.alert-leave-to {
+  opacity: 0;
+  transform: translateY(-20px);
 }
 </style>
