@@ -6,6 +6,6 @@ will be getting new features sometimes
 
 Stack : 
 - Golang
-- SQLite
+- SQLite / GORM
 - Wails 
-- Vue3
+- Vue3 ( composition API )

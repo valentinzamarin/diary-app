@@ -1,12 +1,14 @@
 <script setup>
-
 import { onMounted, onBeforeUnmount, ref } from 'vue'
 import { Editor, EditorContent } from '@tiptap/vue-3'
 import StarterKit from '@tiptap/starter-kit'
-import Button from '../ui/Button.vue'
+
 import Input from '../ui/Input.vue'
+import Alert from '../ui/Alert.vue'
 
 const editor = ref(null)
+const title = ref('')
+const showAlert = ref(false)
 
 onMounted(() => {
   editor.value = new Editor({
@@ -22,24 +24,44 @@ onMounted(() => {
   })
 })
 
-onBeforeUnmount(() => {
-  if (editor.value) {
-    editor.value.destroy()
+const addEntry = async () => {
+  const titleValue = title.value
+  const contentHTML = editor.value.getHTML()
+  const now = new Date()
+
+  try {
+    await window.go.main.App.CreateEntry(titleValue, contentHTML, now)
+    title.value = ""
+    editor.value.commands.clearContent()
+
+    showAlert.value = true
+    setTimeout(() => {
+      showAlert.value = false
+    }, 3000)
+  } catch (e) {
+    console.log(e.message)
   }
-})
+}
+
 
 </script>
 
 <template>
   <main class="flex-1">
     <article class="editor max-w-[840px] h-full w-full flex flex-col justify-center mx-auto py-8">
-      <Input name="article_title" type="text" placeholder="Title.."
+      <Input v-model="title" name="article_title" type="text" placeholder="Title.."
         class="text-3xl border-none outline-none block pb-4" />
       <div class="editor-container">
         <editor-content :editor="editor" />
-        <Button type="submit">Text</Button>
+        <button @click.prevent="addEntry()" type="submit"
+          class="hover:bg-neutral-700 absolute right-4 bottom-4 h-[34px] px-[12px] border-[1px] rounded-[18px] border-white/12 flex items-center justify-center cursor-pointer text-[13px] transition-colors duration-200">
+          Button
+        </button>
       </div>
     </article>
+    <Transition name="alert">
+      <Alert v-if="showAlert">Запись добавлена</Alert>
+    </Transition>
   </main>
 </template>
 
@@ -83,5 +105,16 @@ onBeforeUnmount(() => {
 
 .editor-container {
   position: relative;
+}
+
+.alert-enter-active,
+.alert-leave-active {
+  transition: all 0.3s ease;
+}
+
+.alert-enter-from,
+.alert-leave-to {
+  opacity: 0;
+  transform: translateY(-20px);
 }
 </style>
