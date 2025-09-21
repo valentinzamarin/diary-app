@@ -2,26 +2,34 @@ package main
 
 import (
 	"context"
-	"fmt"
+	"diary-app/internal/app/services"
+	"diary-app/internal/domain/entities"
+	"time"
 )
 
-// App struct
 type App struct {
-	ctx context.Context
+	ctx          context.Context
+	entryService *services.EntryService
 }
 
-// NewApp creates a new App application struct
-func NewApp() *App {
-	return &App{}
+func NewApp(service *services.EntryService) *App {
+	return &App{
+		entryService: service,
+	}
 }
 
-// startup is called when the app starts. The context is saved
-// so we can call the runtime methods
 func (a *App) startup(ctx context.Context) {
 	a.ctx = ctx
 }
 
-// Greet returns a greeting for the given name
-func (a *App) Greet(name string) string {
-	return fmt.Sprintf("Hello %s, It's show time!", name)
+func (a *App) CreateEntry(title, content, dateStr string) {
+	date, _ := time.Parse(time.RFC3339, dateStr)
+
+	newEntry := entities.Entry{
+		Title: title,
+		Text:  content,
+		Date:  date,
+	}
+
+	a.entryService.CreateEntry(a.ctx, newEntry)
 }

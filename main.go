@@ -1,6 +1,9 @@
 package main
 
 import (
+	"diary-app/internal/app/services"
+	"diary-app/internal/inf/sqlite"
+	"diary-app/internal/inf/sqlite/entry"
 	"embed"
 
 	"github.com/wailsapp/wails/v2"
@@ -12,10 +15,18 @@ import (
 var assets embed.FS
 
 func main() {
-	// Create an instance of the app structure
-	app := NewApp()
 
-	// Create application with options
+	basePath := "./notebook.db"
+
+	db, _ := sqlite.NewConnection(basePath)
+	sqlite.Migrate(db)
+
+	entryRepo := entry.NewGormEntriesRepo(db)
+
+	EntryService := services.NewEntryService(entryRepo)
+
+	app := NewApp(EntryService)
+
 	err := wails.Run(&options.App{
 		Title:  "diary-app",
 		Width:  1024,
