@@ -33,3 +33,7 @@ func (a *App) CreateEntry(title, content, dateStr string) {
 
 	a.entryService.CreateEntry(a.ctx, newEntry)
 }
+
+func (a *App) GetEntries() []*entities.Entry {
+	return a.entryService.GetAllEntries(a.ctx)
+}

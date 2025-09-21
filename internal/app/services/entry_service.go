@@ -17,3 +17,9 @@ func NewEntryService(r repo.EntryRepo) *EntryService {
 func (es *EntryService) CreateEntry(ctx context.Context, entry entities.Entry) {
 	es.repo.AddEntry(ctx, entry)
 }
+
+func (es *EntryService) GetAllEntries(ctx context.Context) []*entities.Entry {
+	entries, _ := es.repo.GetEntries(ctx)
+
+	return entries
+}

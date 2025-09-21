@@ -5,3 +5,7 @@
 export function CreateEntry(arg1, arg2, arg3) {
   return window['go']['main']['App']['CreateEntry'](arg1, arg2, arg3);
 }
+
+export function GetEntries() {
+  return window['go']['main']['App']['GetEntries']();
+}
