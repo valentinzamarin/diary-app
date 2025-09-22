@@ -23,3 +23,11 @@ func (es *EntryService) GetAllEntries(ctx context.Context) []*entities.Entry {
 
 	return entries
 }
+
+func (es *EntryService) GetEntry(ctx context.Context, id int) (*entities.Entry, error) {
+	entry, err := es.repo.GetEntry(ctx, id)
+	if err != nil {
+		return nil, err
+	}
+	return entry, nil
+}

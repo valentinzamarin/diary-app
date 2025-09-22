@@ -8,7 +8,10 @@ import Alert from '../ui/Alert.vue'
 
 const editor = ref(null)
 const title = ref('')
+
+// alert logic
 const showAlert = ref(false)
+const alertMessage = ref('')
 
 onMounted(() => {
   editor.value = new Editor({
@@ -27,13 +30,28 @@ onMounted(() => {
 const addEntry = async () => {
   const titleValue = title.value
   const contentHTML = editor.value.getHTML()
-  const now = new Date()
 
+
+  if (titleValue.trim() === "" || !editor.value.state.doc.textContent.trim().length) {
+
+    alertMessage.value = "Поля не могут быть пустыми"
+    showAlert.value = true
+    setTimeout(() => {
+      showAlert.value = false
+    }, 3000)
+    return false
+
+  }
+
+  // remove any time from here
+  // create date with golang and time.Now on backend
+  // avoit extra moves 
   try {
-    await window.go.main.App.CreateEntry(titleValue, contentHTML, now)
+    await window.go.main.App.CreateEntry(titleValue, contentHTML)
     title.value = ""
     editor.value.commands.clearContent()
 
+    alertMessage.value = "Запись добавлена"
     showAlert.value = true
     setTimeout(() => {
       showAlert.value = false
@@ -60,7 +78,7 @@ const addEntry = async () => {
       </div>
     </article>
     <Transition name="alert">
-      <Alert v-if="showAlert">Запись добавлена</Alert>
+      <Alert v-if="showAlert">{{ alertMessage }}</Alert>
     </Transition>
   </main>
 </template>

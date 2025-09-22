@@ -9,3 +9,14 @@ Stack :
 - SQLite / GORM
 - Wails 
 - Vue3 ( composition API )
+
+dev:
+```
+wails dev -tags webkit2_41
+```
+
+build 
+```
+wails build -tags webkit2_41
+```
+
