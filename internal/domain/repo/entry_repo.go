@@ -6,7 +6,8 @@ import (
 )
 
 type EntryRepo interface {
-	AddEntry(ctx context.Context, entry entities.Entry)
+	AddEntry(ctx context.Context, entry entities.Entry) int
 	GetEntries(ctx context.Context) ([]*entities.Entry, error)
 	GetEntry(ctx context.Context, id int) (*entities.Entry, error)
+	DeleteEntry(ctx context.Context, id int)
 }

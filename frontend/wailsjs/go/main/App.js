@@ -6,6 +6,10 @@ export function CreateEntry(arg1, arg2) {
   return window['go']['main']['App']['CreateEntry'](arg1, arg2);
 }
 
+export function DeleteEntryApp(arg1) {
+  return window['go']['main']['App']['DeleteEntryApp'](arg1);
+}
+
 export function GetEntries() {
   return window['go']['main']['App']['GetEntries']();
 }

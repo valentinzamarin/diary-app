@@ -2,16 +2,19 @@
 import { onMounted, onBeforeUnmount, ref } from 'vue'
 import { Editor, EditorContent } from '@tiptap/vue-3'
 import StarterKit from '@tiptap/starter-kit'
+import { useAlert } from '../../composables/useAlert'
 
 import Input from '../ui/Input.vue'
-import Alert from '../ui/Alert.vue'
+import Button from '../ui/Button.vue'
 
 const editor = ref(null)
 const title = ref('')
 
 // alert logic
-const showAlert = ref(false)
-const alertMessage = ref('')
+// const showAlert = ref(false)
+// const alertMessage = ref('')
+/*new*/
+const { showAlert } = useAlert()
 
 onMounted(() => {
   editor.value = new Editor({
@@ -34,11 +37,7 @@ const addEntry = async () => {
 
   if (titleValue.trim() === "" || !editor.value.state.doc.textContent.trim().length) {
 
-    alertMessage.value = "Поля не могут быть пустыми"
-    showAlert.value = true
-    setTimeout(() => {
-      showAlert.value = false
-    }, 3000)
+    showAlert("Поля не могут быть пустыми")
     return false
 
   }
@@ -51,11 +50,7 @@ const addEntry = async () => {
     title.value = ""
     editor.value.commands.clearContent()
 
-    alertMessage.value = "Запись добавлена"
-    showAlert.value = true
-    setTimeout(() => {
-      showAlert.value = false
-    }, 3000)
+    showAlert("Запись добавлена")
   } catch (e) {
     console.log(e.message)
   }
@@ -71,15 +66,11 @@ const addEntry = async () => {
         class="text-3xl border-none outline-none block pb-4" />
       <div class="editor-container">
         <editor-content :editor="editor" />
-        <button @click.prevent="addEntry()" type="submit"
-          class="hover:bg-neutral-700 absolute right-4 bottom-4 h-[34px] px-[12px] border-[1px] rounded-[18px] border-white/12 flex items-center justify-center cursor-pointer text-[13px] transition-colors duration-200">
-          Button
-        </button>
+        <Button @click="addEntry" :class="'absolute right-6 bottom-6'">
+          Добавить
+        </Button>
       </div>
     </article>
-    <Transition name="alert">
-      <Alert v-if="showAlert">{{ alertMessage }}</Alert>
-    </Transition>
   </main>
 </template>
 
@@ -123,16 +114,5 @@ const addEntry = async () => {
 
 .editor-container {
   position: relative;
-}
-
-.alert-enter-active,
-.alert-leave-active {
-  transition: all 0.3s ease;
-}
-
-.alert-enter-from,
-.alert-leave-to {
-  opacity: 0;
-  transform: translateY(-20px);
 }
 </style>

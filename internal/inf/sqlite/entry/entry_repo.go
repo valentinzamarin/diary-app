@@ -19,9 +19,10 @@ func NewGormEntriesRepo(db *gorm.DB) *GormEntriesRepo {
 	}
 }
 
-func (ep *GormEntriesRepo) AddEntry(ctx context.Context, entry entities.Entry) {
+func (ep *GormEntriesRepo) AddEntry(ctx context.Context, entry entities.Entry) int {
 	e := ToEntryModel(entry)
 	ep.db.WithContext(ctx).Create(e)
+	return int(e.ID)
 }
 
 func (ep *GormEntriesRepo) GetEntries(ctx context.Context) ([]*entities.Entry, error) {
@@ -54,4 +55,8 @@ func (ep *GormEntriesRepo) GetEntry(ctx context.Context, id int) (*entities.Entr
 	entry := ToEntry(&em)
 
 	return entry, nil
+}
+
+func (ep *GormEntriesRepo) DeleteEntry(ctx context.Context, id int) {
+	ep.db.WithContext(ctx).Where("id = ?", id).Delete(&EntryModel{})
 }

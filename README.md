@@ -20,3 +20,6 @@ build
 wails build -tags webkit2_41
 ```
 
+---
+
+tried to keep the frontend as simple as possible - anything that could be done via the backend was done via the backend ( wails events as replacement for vue features ). I avoided pulling in state management libraries, like Pinia, without a real need. The main focus was on the backend - the frontend is just there to look nice and for my own personal satisfaction.

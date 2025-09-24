@@ -4,6 +4,8 @@ import {entities} from '../models';
 
 export function CreateEntry(arg1:string,arg2:string):Promise<void>;
 
+export function DeleteEntryApp(arg1:number):Promise<void>;
+
 export function GetEntries():Promise<Array<entities.Entry>>;
 
 export function GetEntry(arg1:number):Promise<entities.Entry>;

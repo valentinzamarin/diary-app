@@ -1,8 +1,11 @@
 <script setup>
 import { ref, onMounted } from 'vue'
-import { useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
+import Button from '../ui/Button.vue'
+
 
 const route = useRoute()
+const router = useRouter()
 const entry = ref(null)
 const error = ref(null)
 
@@ -17,6 +20,12 @@ const loadEntry = async () => {
   }
 }
 
+const removePermannently = async () => {
+  const id = parseInt(route.params.id, 10)
+  await window.go.main.App.DeleteEntryApp(id)
+  router.push({ name: 'home' })
+}
+
 onMounted(() => {
   loadEntry()
 })
@@ -26,12 +35,17 @@ onMounted(() => {
   <div class="flex-1 p-6">
     <div class="max-w-4xl mx-auto">
       <div class="flex justify-between items-center mb-6">
-        <h2 class="text-2xl font-bold">
+        <h2 class="text-3xl font-bold">
           {{ entry ? entry.Title : 'Загрузка...' }}
         </h2>
+        <Button @click="removePermannently()">
+          Удалить
+        </Button>
       </div>
       <div class="prose prose-invert max-w-none">
-        <div class="whitespace-pre-wrap font-sans text-gray-200" v-html="entry ? entry.Text : ''"></div>
+        <div class="space-y-4 whitespace-pre-wrap text-[20px]/[38px] line-height-[24px] text-gray-200"
+          v-html="entry ? entry.Text : ''">
+        </div>
       </div>
       <div v-if="error" class="text-red-500 mt-4">
         {{ error }}

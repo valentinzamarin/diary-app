@@ -32,8 +32,12 @@ func (a *App) CreateEntry(title, content string) {
 		Text:  content,
 		Date:  created_date,
 	}
-
-	a.entryService.CreateEntry(a.ctx, newEntry)
+	// need
+	// cuz instead
+	// get ID 0
+	// @ front
+	id := a.entryService.CreateEntry(a.ctx, newEntry)
+	newEntry.ID = id
 
 	runtime.EventsEmit(a.ctx, "entry:created", newEntry)
 }
@@ -45,4 +49,9 @@ func (a *App) GetEntries() []*entities.Entry {
 func (a *App) GetEntry(id int) (*entities.Entry, error) {
 	content, err := a.entryService.GetEntry(a.ctx, id)
 	return content, err
+}
+
+func (a *App) DeleteEntryApp(id int) {
+	a.entryService.DeleteEntrySrc(a.ctx, id)
+	runtime.EventsEmit(a.ctx, "entry:deleted", id)
 }

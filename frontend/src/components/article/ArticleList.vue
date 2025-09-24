@@ -1,13 +1,19 @@
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, onBeforeUnmount, computed } from 'vue'
 import { EventsOn, EventsOff } from '../../../wailsjs/runtime'
 import { useRouter } from 'vue-router'
+import { useAlert } from '../../composables/useAlert'
+
+
+const props = defineProps({
+  searchText: String
+})
 
 const items = ref([])
 const loading = ref(true)
 const error = ref(null)
 const router = useRouter()
-
+const { showAlert } = useAlert()
 
 const formattedDate = (time) => {
   const date = new Date(time);
@@ -22,7 +28,6 @@ const formattedDate = (time) => {
   return date.toLocaleDateString('ru-RU', options);
 }
 
-
 const loadEntries = async () => {
   try {
     loading.value = true
@@ -36,8 +41,6 @@ const loadEntries = async () => {
       date: formattedDate(entry.Date),
       id: entry.ID
     }))
-
-
   } catch (err) {
     console.error('Error loading entries:', err)
     error.value = 'Не удалось загрузить записи'
@@ -46,8 +49,13 @@ const loadEntries = async () => {
   }
 }
 
+const onEntryDeleted = (deletedId) => {
+  items.value = items.value.filter(item => item.id !== deletedId)
+  showAlert("Запись удалена")
+}
 
 const onEntryCreated = (newEntry) => {
+
   items.value.unshift({
     title: newEntry.Title,
     date: formattedDate(newEntry.Date),
@@ -62,6 +70,19 @@ const openEntry = (id) => {
 onMounted(() => {
   loadEntries()
   EventsOn('entry:created', onEntryCreated)
+  EventsOn('entry:deleted', onEntryDeleted)
+})
+
+onBeforeUnmount(() => {
+  EventsOff('entry:created', onEntryCreated)
+  EventsOff('entry:deleted', onEntryDeleted)
+})
+
+const filteredItems = computed(() => {
+  if (!props.searchText) return items.value
+  return items.value.filter(item =>
+    item.title.toLowerCase().includes(props.searchText.toLowerCase())
+  )
 })
 </script>
 
@@ -74,13 +95,12 @@ onMounted(() => {
     <div v-if="error" class="py-4 text-center text-red-500">
       {{ error }}
     </div>
-
-    <div v-if="!loading && items.length === 0" class="py-4 text-center">
+    <div v-if="!loading && filteredItems.length === 0" class="py-4 text-center">
       <p class="text-gray-500">Записей пока нет</p>
     </div>
 
-    <ul v-if="!loading && items.length > 0" class="">
-      <li v-for="item in items" :key="item.id" @click="openEntry(item.id)"
+    <ul v-if="!loading && filteredItems.length > 0" class="">
+      <li v-for="item in filteredItems" :key="item.id" @click="openEntry(item.id)"
         class="py-4 border-b-[1px] last:border-none border-white/10 cursor-pointer duration-300 hover:text-sky-700">
         <p class="truncate text-sm text-gray-500 dark:text-gray-400">{{ item.date }}</p>
         <h3 class="font-semibold">{{ item.title }}</h3>

@@ -1,5 +1,4 @@
 import { createRouter, createWebHashHistory } from 'vue-router'
-import ArticleList from '../components/article/ArticleList.vue'
 import ArticleEditor from '../components/article/ArticleEditor.vue'
 import ArticleViewer from '../components/article/ArticleViewer.vue'
 
