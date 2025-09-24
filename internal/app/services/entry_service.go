@@ -19,6 +19,10 @@ func (es *EntryService) CreateEntry(ctx context.Context, entry entities.Entry) i
 	return entryID
 }
 
+func (es *EntryService) UpdateEntry(ctx context.Context, entry entities.Entry) {
+	es.repo.UpdateEntry(ctx, entry)
+}
+
 func (es *EntryService) GetAllEntries(ctx context.Context) []*entities.Entry {
 	entries, _ := es.repo.GetEntries(ctx)
 

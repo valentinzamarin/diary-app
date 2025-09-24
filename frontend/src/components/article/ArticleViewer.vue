@@ -20,11 +20,16 @@ const loadEntry = async () => {
   }
 }
 
+const editEntry = () => {
+  router.push({ name: 'edit', params: { id: route.params.id } })
+}
+
 const removePermannently = async () => {
   const id = parseInt(route.params.id, 10)
   await window.go.main.App.DeleteEntryApp(id)
   router.push({ name: 'home' })
 }
+
 
 onMounted(() => {
   loadEntry()
@@ -38,9 +43,14 @@ onMounted(() => {
         <h2 class="text-3xl font-bold">
           {{ entry ? entry.Title : 'Загрузка...' }}
         </h2>
-        <Button @click="removePermannently()">
-          Удалить
-        </Button>
+        <div class="flex gap-6 items-center">
+          <Button @click="editEntry">
+            Редактировать
+          </Button>
+          <Button @click="removePermannently()">
+            Удалить
+          </Button>
+        </div>
       </div>
       <div class="prose prose-invert max-w-none">
         <div class="space-y-4 whitespace-pre-wrap text-[20px]/[38px] line-height-[24px] text-gray-200"

@@ -3,60 +3,99 @@ import { onMounted, onBeforeUnmount, ref } from 'vue'
 import { Editor, EditorContent } from '@tiptap/vue-3'
 import StarterKit from '@tiptap/starter-kit'
 import { useAlert } from '../../composables/useAlert'
-
+import { useRoute, useRouter } from 'vue-router'
 import Input from '../ui/Input.vue'
 import Button from '../ui/Button.vue'
 
 const editor = ref(null)
 const title = ref('')
 
-// alert logic
-// const showAlert = ref(false)
-// const alertMessage = ref('')
-/*new*/
+const route = useRoute()
+const router = useRouter()
+const currentEntryId = ref(null)
+
 const { showAlert } = useAlert()
 
-onMounted(() => {
+onMounted(async () => {
   editor.value = new Editor({
     content: '',
-    extensions: [
-      StarterKit,
-    ],
+    extensions: [StarterKit],
     editorProps: {
       attributes: {
         class: 'prose prose-sm sm:prose lg:prose-lg xl:prose-2xl mx-auto focus:outline-none p-4',
       },
     },
   })
+
+  if (route.path.startsWith('/edit/')) {
+    const id = parseInt(route.params.id, 10)
+    if (!isNaN(id)) {
+      await loadEntry(id)
+    }
+  }
 })
 
+
+
 const addEntry = async () => {
-  const titleValue = title.value
-  const contentHTML = editor.value.getHTML()
+  const titleValue = title.value.trim()
+  const contentHTML = editor.value?.getHTML() || ''
 
-
-  if (titleValue.trim() === "" || !editor.value.state.doc.textContent.trim().length) {
-
+  if (!titleValue || !editor.value?.state.doc.textContent.trim()) {
     showAlert("Поля не могут быть пустыми")
-    return false
-
+    return
   }
 
   // remove any time from here
   // create date with golang and time.Now on backend
   // avoit extra moves 
+
   try {
     await window.go.main.App.CreateEntry(titleValue, contentHTML)
     title.value = ""
     editor.value.commands.clearContent()
-
     showAlert("Запись добавлена")
   } catch (e) {
-    console.log(e.message)
+    console.error(e)
+    showAlert("Ошибка при создании записи")
   }
 }
 
+const updateEntry = async () => {
+  const titleValue = title.value.trim()
+  const contentHTML = editor.value?.getHTML() || ''
 
+  if (!titleValue || !editor.value?.state.doc.textContent.trim()) {
+    showAlert("Поля не могут быть пустыми")
+    return
+  }
+
+  try {
+    await window.go.main.App.UpdateEntry({
+      ID: currentEntryId.value,
+      Title: titleValue,
+      Text: contentHTML
+    })
+    showAlert("Запись обновлена")
+    router.push({ name: 'article', params: { id: currentEntryId.value } })
+  } catch (e) {
+    console.error(e)
+    showAlert("Ошибка при обновлении записи")
+  }
+}
+
+const loadEntry = async (id) => {
+  try {
+    const entry = await window.go.main.App.GetEntry(id)
+    title.value = entry.Title || ''
+    editor.value.commands.setContent(entry.Text || '')
+    currentEntryId.value = entry.ID
+  } catch (e) {
+    console.error('Ошибка загрузки записи:', e)
+    showAlert('Не удалось загрузить запись')
+    router.push({ name: 'home' })
+  }
+}
 </script>
 
 <template>
@@ -65,9 +104,9 @@ const addEntry = async () => {
       <Input v-model="title" name="article_title" type="text" placeholder="Title.."
         class="text-3xl border-none outline-none block pb-4" />
       <div class="editor-container">
-        <editor-content :editor="editor" />
-        <Button @click="addEntry" :class="'absolute right-6 bottom-6'">
-          Добавить
+        <EditorContent :editor="editor" />
+        <Button @click="route.path.startsWith('/edit/') ? updateEntry() : addEntry()" class="absolute right-6 bottom-6">
+          {{ route.path.startsWith('/edit/') ? 'Сохранить' : 'Добавить' }}
         </Button>
       </div>
     </article>

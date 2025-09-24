@@ -25,6 +25,11 @@ func (ep *GormEntriesRepo) AddEntry(ctx context.Context, entry entities.Entry) i
 	return int(e.ID)
 }
 
+func (ep *GormEntriesRepo) UpdateEntry(ctx context.Context, entry entities.Entry) error {
+	entryModel := ToEntryModel(entry) 
+	return ep.db.WithContext(ctx).Save(entryModel).Error
+}
+
 func (ep *GormEntriesRepo) GetEntries(ctx context.Context) ([]*entities.Entry, error) {
 	var dbEntryModels []EntryModel
 	if err := ep.db.Find(&dbEntryModels).Error; err != nil {
