@@ -17,3 +17,7 @@ export function GetEntries() {
 export function GetEntry(arg1) {
   return window['go']['main']['App']['GetEntry'](arg1);
 }
+
+export function UpdateEntry(arg1) {
+  return window['go']['main']['App']['UpdateEntry'](arg1);
+}

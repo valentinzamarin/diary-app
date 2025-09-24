@@ -9,3 +9,5 @@ export function DeleteEntryApp(arg1:number):Promise<void>;
 export function GetEntries():Promise<Array<entities.Entry>>;
 
 export function GetEntry(arg1:number):Promise<entities.Entry>;
+
+export function UpdateEntry(arg1:entities.Entry):Promise<void>;

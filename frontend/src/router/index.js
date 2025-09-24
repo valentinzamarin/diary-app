@@ -4,7 +4,8 @@ import ArticleViewer from '../components/article/ArticleViewer.vue'
 
 const routes = [
     { path: '/', name: 'home', component: ArticleEditor },
-    { path: '/entry/:id', name: 'article', component: ArticleViewer, props: true }
+    { path: '/entry/:id', name: 'article', component: ArticleViewer, props: true },
+    { path: '/edit/:id', name: 'edit', component: ArticleEditor, props: true }
 ]
 
 const router = createRouter({

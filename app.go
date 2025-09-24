@@ -42,6 +42,10 @@ func (a *App) CreateEntry(title, content string) {
 	runtime.EventsEmit(a.ctx, "entry:created", newEntry)
 }
 
+func (a *App) UpdateEntry(updEntrу entities.Entry) {
+	a.entryService.UpdateEntry(a.ctx, updEntrу)
+}
+
 func (a *App) GetEntries() []*entities.Entry {
 	return a.entryService.GetAllEntries(a.ctx)
 }
