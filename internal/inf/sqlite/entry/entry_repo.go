@@ -3,6 +3,8 @@ package entry
 import (
 	"context"
 	"diary-app/internal/domain/entities"
+	"errors"
+	"fmt"
 
 	"gorm.io/gorm"
 )
@@ -17,9 +19,10 @@ func NewGormEntriesRepo(db *gorm.DB) *GormEntriesRepo {
 	}
 }
 
-func (ep *GormEntriesRepo) AddEntry(ctx context.Context, entry entities.Entry) {
+func (ep *GormEntriesRepo) AddEntry(ctx context.Context, entry entities.Entry) int {
 	e := ToEntryModel(entry)
 	ep.db.WithContext(ctx).Create(e)
+	return int(e.ID)
 }
 
 func (ep *GormEntriesRepo) GetEntries(ctx context.Context) ([]*entities.Entry, error) {
@@ -33,5 +36,27 @@ func (ep *GormEntriesRepo) GetEntries(ctx context.Context) ([]*entities.Entry, e
 		entries[i] = ToEntry(&entry)
 	}
 	return entries, nil
+}
 
+func (ep *GormEntriesRepo) GetEntry(ctx context.Context, id int) (*entities.Entry, error) {
+	var em EntryModel
+
+	result := ep.db.WithContext(ctx).
+		Where("id = ?", id).
+		First(&em)
+
+	if result.Error != nil {
+		if errors.Is(result.Error, gorm.ErrRecordNotFound) {
+			return nil, fmt.Errorf("запись с ID %d не найдена", id)
+		}
+		return nil, fmt.Errorf("ошибка при получении записи: %v", result.Error)
+	}
+
+	entry := ToEntry(&em)
+
+	return entry, nil
+}
+
+func (ep *GormEntriesRepo) DeleteEntry(ctx context.Context, id int) {
+	ep.db.WithContext(ctx).Where("id = ?", id).Delete(&EntryModel{})
 }

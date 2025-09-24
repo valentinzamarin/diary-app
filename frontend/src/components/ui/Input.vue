@@ -20,7 +20,7 @@ const props = defineProps({
   }
 })
 
-// Определяем событие на обновление значения
+
 const emit = defineEmits(['update:modelValue'])
 
 function onInput(event) {
