@@ -100,7 +100,7 @@ const loadEntry = async (id) => {
 
 <template>
   <main class="flex-1">
-    <article class="editor max-w-[840px] h-full w-full flex flex-col justify-center mx-auto py-8">
+    <article class="editor max-w-[840px] h-screen overflow-scroll w-full flex flex-col justify-center mx-auto py-8">
       <Input v-model="title" name="article_title" type="text" placeholder="Title.."
         class="text-3xl border-none outline-none block pb-4" />
       <div class="editor-container">

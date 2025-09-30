@@ -38,7 +38,7 @@ onMounted(() => {
 
 <template>
   <div class="flex-1 p-6">
-    <div class="max-w-4xl mx-auto">
+    <div class="max-w-4xl mx-auto h-screen overflow-scroll">
       <div class="flex justify-between items-center mb-6">
         <h2 class="text-3xl font-bold">
           {{ entry ? entry.Title : 'Загрузка...' }}
