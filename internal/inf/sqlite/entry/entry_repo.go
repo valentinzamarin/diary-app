@@ -26,8 +26,18 @@ func (ep *GormEntriesRepo) AddEntry(ctx context.Context, entry entities.Entry) i
 }
 
 func (ep *GormEntriesRepo) UpdateEntry(ctx context.Context, entry entities.Entry) error {
-	entryModel := ToEntryModel(entry) 
-	return ep.db.WithContext(ctx).Save(entryModel).Error
+	// entryModel := ToEntryModel(entry)
+	// return ep.db.WithContext(ctx).Save(entryModel).Error
+
+	// save will update all the fields
+	// with date, which is nil
+
+	return ep.db.WithContext(ctx).Model(&EntryModel{}).
+		Where("id = ?", entry.ID).
+		Updates(map[string]interface{}{
+			"title": entry.Title,
+			"text":  entry.Text,
+		}).Error
 }
 
 func (ep *GormEntriesRepo) GetEntries(ctx context.Context) ([]*entities.Entry, error) {
